@@ -1,0 +1,23 @@
+# Flask Framework
+Flask==3.0.0
+flask-cors==4.0.0
+Werkzeug==3.0.1
+
+# Deep Learning - TensorFlow/Keras (Compatible with Python 3.12)
+tensorflow==2.18.0
+# For CPU only, use: tensorflow-cpu==2.18.0
+
+# Image Processing
+Pillow==10.1.0
+
+# Numerical Computing (Compatible with Python 3.12)
+numpy==1.26.4
+
+# Date/Time utilities
+python-dateutil==2.8.2
+
+# Optional but recommended for production
+gunicorn==21.2.0
+
+# For better logging (optional)
+python-dotenv==1.0.0
