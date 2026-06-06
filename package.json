@@ -6,9 +6,11 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend-api && npm run dev",
     "dev:ml": "cd ml-backend && .\\venv\\Scripts\\python.exe app.py",
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ml\""
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:ml\"",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "concurrently": "^8.2.2"
   },
   "keywords": [

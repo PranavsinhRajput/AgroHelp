@@ -8,64 +8,94 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      const token = localStorage.getItem("token");
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem("token");
 
-      if (!token) {
-        console.warn("No token found");
-        return;
+        if (!token) {
+          console.warn("No token found, redirecting to signin");
+          navigate('/signin');
+          return;
+        }
+
+        const res = await axios.get("http://localhost:4000/api/auth/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.data && res.data.farmer) {
+          setUser(res.data.farmer);
+        } else {
+          throw new Error("User data not found in response");
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err.response?.data || err.message);
+        setError(err.response?.data?.error || "Failed to load user profile");
+        
+        if (err.response?.status === 404) {
+          navigate('/signup');
+        }
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const res = await axios.get("http://localhost:4000/api/auth/me", {
-        headers: {
-          Authorization: `Bearer ${token}`, // 👈 send token here
-        },
-      });
+    fetchUser();
+  }, [navigate]);
 
-      setUser(res.data.farmer);
-    } catch (err) {
-      console.error("Error fetching user:", err);
-      //localStorage.removeItem("token");
-    }
-  };
+  if (loading) {
+    return (
+      <Container className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="text-center">
+          <div className="spinner-border text-primary mb-3" role="status"></div>
+          <p className="lead">{t('loadingYourProfile')}</p>
+        </div>
+      </Container>
+    );
+  }
 
-  fetchUser();
-}, []);
-
-
-  if (!user) return <p>Loading...</p>;
+  if (error && !user) {
+    return (
+      <Container className="py-5 text-center">
+        <div className="alert alert-danger">
+          <h4>{t('error')}</h4>
+          <p>{error}</p>
+          <Button onClick={() => window.location.reload()} variant="outline-danger">{t('retry')}</Button>
+        </div>
+      </Container>
+    );
+  }
 
   const modules = [
     {
       title: t('weatherForecasting'),
       description: t('weatherForecastingDescription'),
       icon: 'bi-cloud-sun',
-      route: '/weather-forecasting',
-      color: '#4a6741'
+      route: '/weather-forecasting'
     },
     {
       title: t('marketPrice'),
-      description: t('Get live APMC mandi rates for various crops and commodities to make informed selling decisions.'),
+      description: t('getLiveApmcMandiRates'),
       icon: 'bi-graph-up-arrow',
-      route: '/market-rates',
-      color: '#4a6741'
+      route: '/market-rates'
     },
     {
       title: t('weatherPrediction'),
       description: t('weatherForecastingDescription'),
       icon: 'bi-cpu',
-      route: '/weather-prediction',
-      color: '#4a6741'
+      route: '/weather-prediction'
     },
     {
       title: t('diseaseDetection'),
       description: t('diseaseDetectionDescription'),
       icon: 'bi-bug',
-      route: '/disease-detection',
-      color: '#4a6741'
+      route: '/disease-detection'
     }
   ];
 
@@ -77,57 +107,43 @@ const Dashboard = () => {
     <Container className="py-5">
       <Row className="mb-4">
         <Col>
-          <h1 className="text-center mb-3" style={{ color: '#4a6741' }}>Dashboard</h1>
+          <h1 className="text-center mb-3" style={{ fontSize: 'var(--font-size-section-heading)', fontWeight: 'var(--font-weight-semibold)' }}>{t('dashboard')}</h1>
           <p className="text-center text-muted lead">
-            Access all AgroHelp smart farming tools
+            {t('accessAllAgroHelpSmartFarmingTools')}
           </p>
         </Col>
       </Row>
 
       <Row className="g-4">
         {modules.map((module, index) => (
-          <Col xs={12} md={6} key={index}>
+          <Col xs={12} md={6} lg={4} key={index}>
             <Card 
-              className="h-100 border-0 shadow-sm module-card"
-              style={{ 
-                cursor: 'pointer',
-                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
-              }}
+              className="h-100"
+              style={{ cursor: 'pointer' }}
               onClick={() => handleCardClick(module.route)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.15)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.12)';
-              }}
             >
               <Card.Body className="p-4 d-flex flex-column">
                 <div className="text-center mb-3">
                   <i 
                     className={`bi ${module.icon} fs-1`} 
-                    style={{ color: module.color }}
+                    style={{ color: 'var(--color-primary)' }}
                   ></i>
                 </div>
-                <h4 className="text-center mb-3" style={{ color: '#4a6741' }}>
+                <h4 className="text-center mb-3" style={{ fontSize: 'var(--font-size-list-item)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>
                   {module.title}
                 </h4>
-                <p className="text-muted text-center mb-4 flex-grow-1">
+                <p className="text-center mb-4 flex-grow-1" style={{ color: 'var(--color-text-secondary)' }}>
                   {module.description}
                 </p>
                 <Button 
-                  style={{ 
-                    backgroundColor: module.color, 
-                    border: 'none' 
-                  }}
+                  variant="primary"
                   className="w-100"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleCardClick(module.route);
                   }}
                 >
-                  Open Module
+                  {t('openModule')}
                 </Button>
               </Card.Body>
             </Card>
@@ -137,24 +153,24 @@ const Dashboard = () => {
 
       <Row className="mt-5">
         <Col>
-          <Card className="border-0 shadow-sm" style={{ backgroundColor: '#f8f9fa' }}>
+          <Card>
             <Card.Body className="p-4">
-              <h5 className="mb-3" style={{ color: '#4a6741' }}>
+              <h5 className="mb-3" style={{ fontSize: 'var(--font-size-section-heading)', fontWeight: 'var(--font-weight-medium)' }}>
                 <i className="bi bi-info-circle me-2"></i>
-                Quick Guide
+                {t('quickGuide')}
               </h5>
-              <ul className="text-muted mb-0">
+              <ul style={{ color: 'var(--color-text-secondary)' }} className="mb-0">
                 <li className="mb-2">
-                  <strong>Weather Forecasting:</strong> View current weather conditions and 7-day forecasts
+                  <strong style={{ color: 'var(--color-text-primary)' }}>{t('weatherForecasting')}:</strong> {t('weatherForecastingGuide')}
                 </li>
                 <li className="mb-2">
-                  <strong>Mandi Rates:</strong> Access real-time agricultural commodity prices from APMC markets
+                  <strong style={{ color: 'var(--color-text-primary)' }}>{t('marketPrice')}:</strong> {t('mandiRatesGuide')}
                 </li>
                 <li className="mb-2">
-                  <strong>ML Weather Prediction:</strong> Get AI-powered weather predictions for better planning
+                  <strong style={{ color: 'var(--color-text-primary)' }}>{t('weatherPrediction')}:</strong> {t('mlWeatherPredictionGuide')}
                 </li>
                 <li className="mb-0">
-                  <strong>Plant Disease Detection:</strong> Upload crop images for instant disease diagnosis
+                  <strong style={{ color: 'var(--color-text-primary)' }}>{t('diseaseDetection')}:</strong> {t('plantDiseaseDetectionGuide')}
                 </li>
               </ul>
             </Card.Body>

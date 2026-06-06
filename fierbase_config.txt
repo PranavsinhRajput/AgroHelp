@@ -1,0 +1,17 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyABFz_MtDDZuleZ3y_Vy9ifSjOENxDimYA",
+  authDomain: "agrohelp-4cb79.firebaseapp.com",
+  projectId: "agrohelp-4cb79",
+  storageBucket: "agrohelp-4cb79.firebasestorage.app",
+  messagingSenderId: "626687942877",
+  appId: "1:626687942877:web:6a3f30549e0440d2d3fb34"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);

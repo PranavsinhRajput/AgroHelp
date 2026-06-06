@@ -7,11 +7,12 @@ require('dotenv').config();
 const rootRouter = require('./routes/index')
 
 
-const Farmer = require('./models/farmer');
-const { default: connectDB } = require('./db');
+const { connectDB } = require('./db');
+const verifyToken = require('./middlewares/authMiddleware');
+const { predictionLimiter } = require('./middlewares/rateLimiter');
 
-// Connect to MongoDB
-connectDB();
+// Initialize Firebase and Firestore
+const db = connectDB();
 
 const app = express();
 const PORT = 4000;
@@ -38,30 +39,30 @@ app.get('/', (req, res) => {
 
 
 
-// Weather prediction route
-app.post('/api/predict/weather', async (req, res) => {
+app.post('/api/predict/weather', predictionLimiter, verifyToken, async (req, res) => {
   try {
-    console.log('Weather prediction request received');
-    console.log('Data:', req.body.weatherData);
+    const { city, weatherData } = req.body;
+    console.log(`[Weather] Prediction request for city: ${city}`);
 
-    // Forward request to Flask ML server
+    // Forward city + today's observed features to Flask ML server
     const response = await axios.post(`${ML_SERVER_URL}/predict/weather`, {
-      weatherData: req.body.weatherData
+      city,
+      weatherData,
     });
 
-    console.log('ML Server response:', response.data);
+    console.log('[ML Server] Prediction received:', response.data);
     res.json(response.data);
   } catch (error) {
-    console.error('Weather prediction error:', error.message);
-    res.status(500).json({ 
+    console.error('[Weather] Prediction error:', error.message);
+    res.status(500).json({
       error: 'Weather prediction failed',
-      message: error.message 
+      message: error.message,
     });
   }
 });
 
 // Disease detection route
-app.post('/api/predict/disease', upload.single('image'), async (req, res) => {
+app.post('/api/predict/disease', predictionLimiter, verifyToken, upload.single('image'), async (req, res) => {
   try {
     console.log('Disease detection request received');
     

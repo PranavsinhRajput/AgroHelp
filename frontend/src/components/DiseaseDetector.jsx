@@ -16,17 +16,22 @@ const DiseaseDetector = () => {
     if (file) {
       setSelectedImage(file);
 
-      // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target.result);
       };
       reader.readAsDataURL(file);
 
-      // Clear previous results
       setPrediction(null);
       setError(null);
     }
+  };
+
+  const handleReupload = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    setPrediction(null);
+    setError(null);
   };
 
   const handleDiseasePrediction = async () => {
@@ -42,9 +47,11 @@ const DiseaseDetector = () => {
       const formData = new FormData();
       formData.append('image', selectedImage);
 
+      const token = localStorage.getItem('token');
       const response = await axios.post('http://localhost:4000/api/predict/disease', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
         },
       });
 
@@ -88,7 +95,7 @@ const DiseaseDetector = () => {
             </div>
           )}
 
-          <div className="d-grid">
+          <div className="d-grid gap-2">
             <Button
               onClick={handleDiseasePrediction}
               disabled={loading || !selectedImage}
@@ -103,6 +110,17 @@ const DiseaseDetector = () => {
                 </>
               ) : t('diseaseDetection')}
             </Button>
+
+            {prediction && (
+              <Button
+                onClick={handleReupload}
+                variant="outline-secondary"
+                size="lg"
+                className="py-2"
+              >
+                🔄 Re-upload Image
+              </Button>
+            )}
           </div>
         </Card.Body>
       </Card>
@@ -115,51 +133,60 @@ const DiseaseDetector = () => {
       )}
 
       {prediction && (
-        <Card className="shadow-sm">
-          <Card.Header className="bg-success text-white">
-            <h3 className="h5 mb-0">Disease Detection Result</h3>
-          </Card.Header>
-          <Card.Body className="d-flex flex-column" style={{ gap: '1rem' }}>
-            <Row className="mb-3">
-              <Col sm={4} className="fw-bold">Disease:</Col>
-              <Col sm={8} className="text-primary fw-bold">{prediction.disease}</Col>
-            </Row>
-            <Row className="pb-3 border-bottom">
-              <Col sm={4} className="fw-bold">Confidence:</Col>
-              <Col sm={8}>{prediction.confidence}%</Col>
-            </Row>
-            <Row className="pb-3 border-bottom">
-              <Col sm={4} className="fw-bold">Recommendation:</Col>
-              <Col sm={8}>
-                <ul className="mb-0">
-                  {prediction.recommendations.map((rec, index) => (
-                    <li key={index}>{rec}</li>
-                  ))}
-                </ul>
-              </Col>
-            </Row>
-            <Row className="pb-3 border-bottom">
-              <Col sm={4} className="fw-bold">Prevention:</Col>
-              <Col sm={8}>
-                <ul className="mb-0">
-                  {prediction.prevention.map((prev, index) => (
-                    <li key={index}>{prev}</li>
-                  ))}
-                </ul>
-              </Col>
-            </Row>
-            <Row>
-              <Col sm={4} className="fw-bold">Organic Alternatives:</Col>
-              <Col sm={8}>
-                <ul className="mb-0">
-                  {prediction.organic_alternatives.map((alt, index) => (
-                    <li key={index}>{alt}</li>
-                  ))}
-                </ul>
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
+        prediction.confidence < 90 ? (
+          <Alert variant="warning" className="mb-4">
+            <Alert.Heading>⚠️ Poor Image Quality</Alert.Heading>
+            <p className="mb-0">
+              The uploaded image is not clear. Please upload a clear plant image.
+            </p>
+          </Alert>
+        ) : (
+          <Card className="shadow-sm">
+            <Card.Header className="bg-success text-white">
+              <h3 className="h5 mb-0">{t('diseaseDetectionResult')}</h3>
+            </Card.Header>
+            <Card.Body className="d-flex flex-column" style={{ gap: '1rem' }}>
+              <Row className="mb-3">
+                <Col sm={4} className="fw-bold">{t('disease')}</Col>
+                <Col sm={8} className="text-primary fw-bold">{prediction.disease}</Col>
+              </Row>
+              <Row className="pb-3 border-bottom">
+                <Col sm={4} className="fw-bold">{t('confidence')}:</Col>
+                <Col sm={8}>{prediction.confidence}%</Col>
+              </Row>
+              <Row className="pb-3 border-bottom">
+                <Col sm={4} className="fw-bold">{t('recommendation')}</Col>
+                <Col sm={8}>
+                  <ul className="mb-0">
+                    {prediction.recommendations.map((rec, index) => (
+                      <li key={index}>{rec}</li>
+                    ))}
+                  </ul>
+                </Col>
+              </Row>
+              <Row className="pb-3 border-bottom">
+                <Col sm={4} className="fw-bold">{t('prevention')}</Col>
+                <Col sm={8}>
+                  <ul className="mb-0">
+                    {prediction.prevention.map((prev, index) => (
+                      <li key={index}>{prev}</li>
+                    ))}
+                  </ul>
+                </Col>
+              </Row>
+              <Row>
+                <Col sm={4} className="fw-bold">{t('organicAlternatives')}</Col>
+                <Col sm={8}>
+                  <ul className="mb-0">
+                    {prediction.organic_alternatives.map((alt, index) => (
+                      <li key={index}>{alt}</li>
+                    ))}
+                  </ul>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        )
       )}
     </Container>
   );

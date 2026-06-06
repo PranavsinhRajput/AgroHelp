@@ -20,7 +20,7 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Thank you for your message! We will get back to you soon.');
+    alert(t('thankYouForYourMessage'));
     setFormData({
       name: '',
       email: '',
@@ -60,8 +60,8 @@ const Contact = () => {
     <Container className="py-5">
       <Row className="mb-4">
         <Col>
-          <h1 className="text-center mb-3" style={{ color: '#4a6741' }}>{t('contactUs')}</h1>
-          <p className="text-center text-muted lead">
+          <h1 className="text-center mb-3" style={{ fontSize: 'var(--font-size-section-heading)', fontWeight: 'var(--font-weight-semibold)', color: 'var(--color-text-primary)' }}>{t('contactUs')}</h1>
+          <p className="text-center lead" style={{ color: 'var(--color-text-secondary)' }}>
             {t('getInTouch')}
           </p>
         </Col>
@@ -69,28 +69,33 @@ const Contact = () => {
 
       <Row className="mb-5">
         <Col>
-          <h3 className="mb-4" style={{ color: '#4a6741' }}>{t('meetOurTeam')}</h3>
+          <h3 className="mb-4" style={{ fontSize: 'var(--font-size-section-heading)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>{t('meetOurTeam')}</h3>
         </Col>
       </Row>
 
       <Row className="g-4 mb-5">
         {teamMembers.map((member, index) => (
-          <Col md={6} lg={3} key={index}>
-            <Card className="h-100 border-0 shadow-sm">
+          <Col xs={12} md={6} lg={3} key={index}>
+            <Card className="h-100">
               <Card.Body className="text-center p-4">
                 <div className="mb-3">
-                  <i className="bi bi-person-circle fs-1" style={{ color: '#4a6741' }}></i>
+                  <div 
+                    className="d-flex align-items-center justify-content-center rounded-circle mx-auto"
+                    style={{ width: '60px', height: '60px', backgroundColor: 'var(--color-green)', color: 'white' }}
+                  >
+                    <i className="bi bi-person fs-2"></i>
+                  </div>
                 </div>
-                <h5 className="mb-2">{member.name}</h5>
-                <p className="text-muted small mb-3">
+                <h5 className="mb-2" style={{ fontSize: 'var(--font-size-list-item)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>{member.name}</h5>
+                <p className="small mb-3" style={{ color: 'var(--color-text-secondary)' }}>
                   <i className="bi bi-envelope me-2"></i>
                   {member.email}
                 </p>
                 <div className="d-flex justify-content-center gap-3">
-                  <a href={member.linkedin} className="text-dark">
+                  <a href={member.linkedin} style={{ color: 'var(--color-text-primary)' }}>
                     <i className="bi bi-linkedin fs-5"></i>
                   </a>
-                  <a href={member.github} className="text-dark">
+                  <a href={member.github} style={{ color: 'var(--color-text-primary)' }}>
                     <i className="bi bi-github fs-5"></i>
                   </a>
                 </div>
@@ -101,13 +106,13 @@ const Contact = () => {
       </Row>
 
       <Row className="g-4">
-        <Col lg={6}>
-          <Card className="border-0 shadow-sm h-100">
+        <Col xs={12} lg={6}>
+          <Card className="h-100">
             <Card.Body className="p-4">
-              <h4 className="mb-4" style={{ color: '#4a6741' }}>{t('sendMessage')}</h4>
+              <h4 className="mb-4" style={{ fontSize: 'var(--font-size-section-heading)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>{t('sendMessage')}</h4>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
-                  <Form.Label>{t('yourName')}</Form.Label>
+                  <Form.Label style={{ color: 'var(--color-text-primary)' }}>{t('yourName')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="name"
@@ -119,7 +124,7 @@ const Contact = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>{t('email')}</Form.Label>
+                  <Form.Label style={{ color: 'var(--color-text-primary)' }}>{t('email')}</Form.Label>
                   <Form.Control
                     type="email"
                     name="email"
@@ -131,7 +136,7 @@ const Contact = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>{t('subject')}</Form.Label>
+                  <Form.Label style={{ color: 'var(--color-text-primary)' }}>{t('subject')}</Form.Label>
                   <Form.Control
                     type="text"
                     name="subject"
@@ -143,7 +148,7 @@ const Contact = () => {
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>{t('yourMessage')}</Form.Label>
+                  <Form.Label style={{ color: 'var(--color-text-primary)' }}>{t('yourMessage')}</Form.Label>
                   <Form.Control
                     as="textarea"
                     name="message"
@@ -157,7 +162,7 @@ const Contact = () => {
 
                 <Button 
                   type="submit" 
-                  style={{ backgroundColor: '#4a6741', border: 'none' }}
+                  variant="primary"
                   className="w-100"
                 >
                   {t('sendMessage')}
@@ -167,48 +172,48 @@ const Contact = () => {
           </Card>
         </Col>
 
-        <Col lg={6}>
-          <Card className="border-0 shadow-sm mb-4">
+        <Col xs={12} lg={6}>
+          <Card className="mb-4">
             <Card.Body className="p-4">
-              <h4 className="mb-4" style={{ color: '#4a6741' }}>{t('contactInformation')}</h4>
+              <h4 className="mb-4" style={{ fontSize: 'var(--font-size-section-heading)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>{t('contactInformation')}</h4>
               <div className="mb-3">
-                <h6 className="mb-2">
-                  <i className="bi bi-geo-alt-fill me-2" style={{ color: '#4a6741' }}></i>
+                <h6 className="mb-2" style={{ fontSize: 'var(--font-size-list-item)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>
+                  <i className="bi bi-geo-alt me-2" style={{ color: 'var(--color-primary)' }}></i>
                   {t('address')}
                 </h6>
-                <p className="text-muted ms-4">Agricultural Research Center, India</p>
+                <p className="ms-4" style={{ color: 'var(--color-text-secondary)' }}>{t('agriculturalResearchCenterIndia')}</p>
               </div>
               <div className="mb-3">
-                <h6 className="mb-2">
-                  <i className="bi bi-envelope-fill me-2" style={{ color: '#4a6741' }}></i>
+                <h6 className="mb-2" style={{ fontSize: 'var(--font-size-list-item)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>
+                  <i className="bi bi-envelope me-2" style={{ color: 'var(--color-primary)' }}></i>
                   {t('email')}
                 </h6>
-                <p className="text-muted ms-4">contact@agrohelp.com</p>
+                <p className="ms-4" style={{ color: 'var(--color-text-secondary)' }}>{t('contactAtAgrohelpCom')}</p>
               </div>
               <div className="mb-0">
-                <h6 className="mb-2">
-                  <i className="bi bi-telephone-fill me-2" style={{ color: '#4a6741' }}></i>
+                <h6 className="mb-2" style={{ fontSize: 'var(--font-size-list-item)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>
+                  <i className="bi bi-telephone me-2" style={{ color: 'var(--color-primary)' }}></i>
                   {t('phone')}
                 </h6>
-                <p className="text-muted ms-4">+91 12345 67890</p>
+                <p className="ms-4" style={{ color: 'var(--color-text-secondary)' }}>{t('plus911234567890')}</p>
               </div>
             </Card.Body>
           </Card>
 
-          <Card className="border-0 shadow-sm">
+          <Card>
             <Card.Body className="p-4">
-              <h4 className="mb-4" style={{ color: '#4a6741' }}>{t('followUs')}</h4>
+              <h4 className="mb-4" style={{ fontSize: 'var(--font-size-section-heading)', fontWeight: 'var(--font-weight-medium)', color: 'var(--color-text-primary)' }}>{t('followUs')}</h4>
               <div className="d-flex gap-3">
-                <a href="#" className="text-dark fs-4">
+                <a href="#" style={{ color: 'var(--color-text-primary)' }} className="fs-4">
                   <i className="bi bi-facebook"></i>
                 </a>
-                <a href="#" className="text-dark fs-4">
+                <a href="#" style={{ color: 'var(--color-text-primary)' }} className="fs-4">
                   <i className="bi bi-linkedin"></i>
                 </a>
-                <a href="#" className="text-dark fs-4">
+                <a href="#" style={{ color: 'var(--color-text-primary)' }} className="fs-4">
                   <i className="bi bi-github"></i>
                 </a>
-                <a href="#" className="text-dark fs-4">
+                <a href="#" style={{ color: 'var(--color-text-primary)' }} className="fs-4">
                   <i className="bi bi-instagram"></i>
                 </a>
               </div>

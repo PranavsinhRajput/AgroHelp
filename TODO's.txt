@@ -1,0 +1,6 @@
+1.Convert the authentication from JWT to firebase auth
+2.Use firebase firestore for the database instead of mongoDB
+3.Market price prediction
+4. LSTM model for weather prediction.
+5. UI changes.
+6. Mobile first view.

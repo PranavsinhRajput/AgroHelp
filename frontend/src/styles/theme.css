@@ -1,0 +1,84 @@
+:root {
+  /* Colors */
+  --color-bg-page: #F2F1EC;
+  --color-bg-card: #FFFFFF;
+  --color-bg-active: #FFF4E6;
+  --color-primary: #F5A32A;
+  --color-green: #34A853;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #888888;
+  --color-text-placeholder: #AAAAAA;
+  --color-icon-inactive: #999999;
+  --color-border: #E0E0E0;
+  
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  
+  --font-size-brand: 18px;
+  --font-size-section-heading: 16px;
+  --font-size-list-item: 15px;
+  --font-size-meta: 13px;
+  --font-size-placeholder: 13px;
+  --font-size-counter: 11px;
+  
+  /* Spacing */
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Borders & Radius */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-width: 1px;
+  
+  /* Override Bootstrap variables */
+  --bs-body-bg: var(--color-bg-page);
+  --bs-body-color: var(--color-text-primary);
+  --bs-primary: var(--color-primary);
+  --bs-primary-rgb: 245, 163, 42;
+  --bs-success: var(--color-green);
+  --bs-success-rgb: 52, 168, 83;
+  --bs-card-bg: var(--color-bg-card);
+  --bs-border-radius: var(--border-radius-sm);
+  --bs-font-sans-serif: var(--font-family);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+}
+
+.card {
+  background-color: var(--color-bg-card);
+  border-radius: var(--border-radius-md);
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: none;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background-color: #e6951e;
+  border-color: #e6951e;
+}
+
+.navbar {
+  background-color: var(--color-bg-card);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary) !important;
+}

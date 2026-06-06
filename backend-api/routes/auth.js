@@ -1,105 +1,86 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const Farmer = require('../models/farmer');
+const { getDB, admin } = require('../db');
 const verifyToken = require('../middlewares/authMiddleware');
+const { authWriteLimiter } = require('../middlewares/rateLimiter');
+const logger = require('../utils/logger');
 
 const router = express.Router();
 
-// Secret key for JWT (you should keep this in .env)
-const JWT_SECRET = process.env.JWT_SECRET || 'agrohelp';
-
-// ✅ Signup route
-router.post('/signup', async (req, res) => {
+// ✅ Signup route - Syncs Firebase User with Firestore Profile
+router.post('/signup', authWriteLimiter, verifyToken, async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, village, phone } = req.body;
+    const { uid, email } = req.user;
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!name || !village || !phone) {
+      logger.warn('Signup failed: Missing fields', { uid, name, village, phone });
+      return res.status(400).json({ error: 'Name, village, and phone are required' });
     }
 
-    const existingFarmer = await Farmer.findOne({ email });
-    if (existingFarmer) {
-      return res.status(400).json({ error: 'Farmer already exists' });
+    const db = getDB();
+    const userRef = db.collection('farmers').doc(uid);
+    const userDoc = await userRef.get();
+
+    if (userDoc.exists) {
+      logger.info('User already registered, updating profile', { uid });
+    } else {
+      logger.info('New farmer registration', { uid, phone });
     }
 
-    // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const farmerData = {
+      uid,
+      name,
+      village,
+      phone,
+      email: email || '',
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: userDoc.exists ? userDoc.data().createdAt : admin.firestore.FieldValue.serverTimestamp(),
+    };
 
-    const newFarmer = new Farmer({ name, email, password: hashedPassword });
-    await newFarmer.save();
+    await userRef.set(farmerData, { merge: true });
 
-    // Create JWT token
-    const token = jwt.sign(
-      { id: newFarmer._id, email: newFarmer.email },
-      JWT_SECRET,
-      { expiresIn: '1d' }
-    );
+    logger.info('Farmer profile synced successfully', { uid });
 
     res.status(201).json({
       message: 'Signup successful',
-      farmer: {
-        id: newFarmer._id,
-        name: newFarmer.name,
-        email: newFarmer.email,
-      },
-      token,
+      farmer: farmerData,
     });
   } catch (error) {
-    console.error('Signup error:', error.message);
+    logger.error('Signup sync error', error);
     res.status(500).json({ error: 'Signup failed', message: error.message });
   }
 });
 
-// ✅ Signin route
-router.post('/signin', async (req, res) => {
+// ✅ Get logged-in user details
+router.get("/me", verifyToken, async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
+    const db = getDB();
+    const userDoc = await db.collection('farmers').doc(req.user.uid).get();
+    
+    if (!userDoc.exists) {
+      logger.warn('User profile not found in Firestore', { uid: req.user.uid });
+      return res.status(404).json({ error: 'Farmer profile not found. Please complete signup.' });
     }
 
-    const existingFarmer = await Farmer.findOne({ email });
-    if (!existingFarmer) {
-      return res.status(404).json({ error: 'Farmer not found' });
-    }
-
-    // Compare password with hashed password
-    const isMatch = await bcrypt.compare(password, existingFarmer.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid password' });
-    }
-
-    // Generate token
-    const token = jwt.sign(
-      { id: existingFarmer._id, email: existingFarmer.email },
-      JWT_SECRET,
-      { expiresIn: '1d' }
-    );
-
-    res.status(200).json({
-      message: 'Login successful',
-      farmer: {
-        id: existingFarmer._id,
-        name: existingFarmer.name,
-        email: existingFarmer.email,
-      },
-      token,
-    });
+    const farmerData = userDoc.data();
+    logger.info('User profile fetched', { uid: req.user.uid });
+    
+    res.json({ farmer: { id: userDoc.id, ...farmerData } });
   } catch (error) {
-    console.error('Signin error:', error.message);
-    res.status(500).json({ error: 'Signin failed', message: error.message });
+    logger.error('Error fetching user data', error);
+    res.status(500).json({ error: 'Failed to fetch user data' });
   }
 });
 
-// Get logged-in user details
-router.get("/me", verifyToken, async (req, res) => {
+// ✅ Health check/Monitor auth events (Internal use or admin)
+router.get("/stats", verifyToken, async (req, res) => {
+  // Simple check if user is admin could be added here
   try {
-    const farmer = await Farmer.findById(req.user.id).select("-password");
-    res.json({ farmer });
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
+    const db = getDB();
+    const snapshot = await db.collection('farmers').count().get();
+    res.json({ total_farmers: snapshot.data().count });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 

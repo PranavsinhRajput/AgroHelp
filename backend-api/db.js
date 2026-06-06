@@ -1,17 +1,33 @@
-// db.js
-import mongoose from 'mongoose';
+const admin = require('firebase-admin');
+require('dotenv').config();
 
-const connectDB = async () => {
+let db;
+
+const connectDB = () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    if (!admin.apps.length) {
+      admin.initializeApp({
+        credential: admin.credential.cert({
+          projectId: process.env.FIREBASE_PROJECT_ID,
+          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+          privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        }),
+      });
+      console.log('✅ Firebase Admin SDK Initialized');
+    }
+    db = admin.firestore();
+    return db;
   } catch (error) {
-    console.error(`❌ Error: ${error.message}`);
-    process.exit(1); // Stop app if DB fails to connect
+    console.error(`❌ Firebase Initialization Error: ${error.message}`);
+    process.exit(1);
   }
 };
 
-export default connectDB;
+const getDB = () => {
+  if (!db) {
+    return connectDB();
+  }
+  return db;
+};
+
+module.exports = { connectDB, getDB, admin };

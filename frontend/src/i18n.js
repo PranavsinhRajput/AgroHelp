@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import hiTranslation from './locales/hi/translation.json';
 import mrTranslation from './locales/mr/translation.json';
+import enTranslation from './locales/en/translation.json';
 
 // Language direction configuration
 const languageDirections = {
@@ -16,64 +17,7 @@ const languageDirections = {
 // the translations
 const resources = {
   en: {
-    translation: {
-      welcome: 'Welcome',
-      dashboard: 'Dashboard',
-      home: 'Home',
-      disease: 'Disease',
-      weather: 'Weather',
-      profile: 'Profile',
-      logout: 'Logout',
-      diseaseDetection: 'Disease Detection',
-      uploadImage: 'Upload Image',
-      getStarted: 'GET STARTED',
-      marketPrice: 'Market Price',
-      temperature: 'Temperature',
-      humidity: 'Humidity',
-      smartAgriculture: 'Smart Agriculture',
-      appDescription: 'AgroHelp is a software application that helps farmers manage and optimize their agricultural operations.',
-      selectLanguage: 'Select Language',
-      weatherPrediction: 'Weather Prediction',
-      location: 'Location',
-      submit: 'Submit',
-      results: 'Results',
-      loading: 'Loading...',
-      error: 'An error occurred',
-      tryAgain: 'Try Again',
-      noData: 'No data available',
-      about: 'About',
-      contact: 'Contact',
-      ourMission: 'Our Mission',
-      whyChooseUs: 'Why Choose Us',
-      contactUs: 'Contact Us',
-      sendMessage: 'Send Message',
-      yourName: 'Your Name',
-      yourEmail: 'Your Email',
-      yourMessage: 'Your Message',
-      meetOurTeam: 'Meet Our Team',
-      contactInformation: 'Contact Information',
-      address: 'Address',
-      email: 'Email',
-      phone: 'Phone',
-      empoweringFarmers: 'Empowering farmers with smart technology for sustainable agriculture',
-      missionDescription: 'AgroHelp is dedicated to revolutionizing agriculture through innovative technology. We provide farmers with intelligent tools to detect plant diseases early, predict weather patterns, and make informed decisions that lead to healthier crops and better yields.',
-      platformDescription: 'Our platform combines cutting-edge AI and machine learning to deliver accurate, real-time insights that help farmers protect their investments and contribute to sustainable farming practices.',
-      diseaseDetectionDescription: 'Advanced AI-powered image recognition to identify plant diseases quickly and accurately.',
-      weatherForecasting: 'Weather Forecasting',
-      weatherForecastingDescription: 'Real-time weather predictions to help you plan farming activities and protect crops.',
-      smartAnalytics: 'Smart Analytics',
-      smartAnalyticsDescription: 'Data-driven insights to optimize crop management and increase productivity.',
-      userFriendly: 'User-friendly interface designed for farmers of all tech levels',
-      accuratePredictions: 'Accurate AI-powered predictions backed by extensive research',
-      multiLanguageSupport: 'Multi-language support for accessibility',
-      regularUpdates: 'Regular updates with latest agricultural insights',
-      dedicatedSupport: 'Dedicated support team committed to your success',
-      getInTouch: 'Get in touch with our team',
-      subject: 'Subject',
-      followUs: 'Follow Us',
-      windSpeed: 'Wind Speed',
-      precipitation: 'Precipitation'
-    }
+    translation: enTranslation
   },
   hi: {
     translation: hiTranslation

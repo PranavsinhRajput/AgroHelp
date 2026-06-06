@@ -86,6 +86,20 @@ export const WeatherProvider = ({ children }) => {
     );
   };
 
+  // Add this alongside getWeatherDataForCity and getWeatherDataForLocation
+
+const getWeatherForecastForCity = async (city) => {
+  try {
+    const forecastURL = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${city}&days=2&hour=12&aqi=no`;
+    const response = await fetch(forecastURL);
+    if (!response.ok) throw new Error("City not found");
+    return await response.json();
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+
   return (
     <WeatherContext.Provider
       value={{
@@ -96,6 +110,7 @@ export const WeatherProvider = ({ children }) => {
         setSearchCity,
         fetchData,
         fetchCurrentUserLocationData,
+        getWeatherForecastForCity,
       }}
     >
       {children}
